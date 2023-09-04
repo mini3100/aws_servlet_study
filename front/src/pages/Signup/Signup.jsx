@@ -40,16 +40,28 @@ function Signup(props) {
                 username: signupUser.username
             }
         };
-        axios.get("http://localhost:8080/servlet_study_ga0/auth/signup/duplicate/username", option)
-        .then((response) => {
-            axios.post("http://localhost:8080/servlet_study_ga0/auth/signup", signupUser)
-            .then((response) => {
-                alert(response.data);
+
+        const signup = async () => {
+            let response = await axios.get("http://localhost:8080/servlet_study_ga0/auth/signup/duplicate/username", option);
+
+            if(response.data) { // await을 쓰지 않으면 해당 if문이 먼저 실행되어 빈 값을 가져올 수도 있다.
+                alert("중복된 아이디입니다.");
+                return;
+            }
+
+            try {
+                response = await axios.post("http://localhost:8080/servlet_study_ga0/auth/signup", signupUser);
+                if(!response.data) {
+                    throw new Error(response);
+                }
+                alert("회원가입 성공!");
                 navigate("/signin");
-            });
-        }).catch((error) => {
-            alert("중복된 아이디입니다.");
-        });
+            } catch(error) {
+                console.log("회원가입 실패");
+            }
+        }
+
+        signup();
     }
 
     return (
