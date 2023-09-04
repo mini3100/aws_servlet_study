@@ -1,9 +1,7 @@
-package sevlet;
+package servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -12,8 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-
+import data.UserData;
+import entity.User;
 import utils.JsonParseUtil;
 import utils.ResponseUtil;
 
@@ -37,17 +35,20 @@ public class SignupServlet extends HttpServlet {
 		Map<String, Object> userMap = JsonParseUtil.toMap(request.getInputStream()); 
 		
 		System.out.println(userMap);
-//		System.out.println(userMap.get("username"));
-//		System.out.println(userMap.get("password"));
-//		System.out.println(userMap.get("name"));
-//		System.out.println(userMap.get("email"));
 		
-		System.out.println("회원가입");
+		List<User> userList = UserData.userList;
 		
-		// 객체 -> json 바꿔서 응답(response)
-//		ResponseUtil.ofJson(response, JsonParseUtil.toJson(true));
+		User user = User.builder()
+				.userId(userList.size() + 1)
+				.username((String) userMap.get("username"))
+				.password((String) userMap.get("password"))
+				.name((String) userMap.get("name"))
+				.email((String) userMap.get("email"))
+				.build();
 		
-		ResponseUtil.response(response).of(200).body("회원가입 성공!!!");
+		userList.add(user);
+		
+		ResponseUtil.response(response).of(201).body(true);	// 201 : 성공 - 생성 코드
 	}
 
 }
